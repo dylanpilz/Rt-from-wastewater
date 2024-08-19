@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "rt-from-wastewater"
+version = "0.1.0"
+description = ""
+authors = ["Dylan Pilz <dpilz@scripps.edu>"]
+license = "GPL-3.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpyro = "^0.15.2"
+pandas = "^2.2.2"
+jax = "^0.4.31"
+numpy = "^2.1.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+flake8 = "^7.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
