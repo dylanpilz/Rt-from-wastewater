@@ -15,7 +15,6 @@ numpy = "^2.1.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.8.0"
-flake8 = "^7.1.0"
 
 [build-system]
 requires = ["poetry-core"]
