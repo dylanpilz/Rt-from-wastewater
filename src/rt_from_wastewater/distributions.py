@@ -1,5 +1,4 @@
 import numpy as np
-import numpyro
 import numpyro.distributions as dist
 import jax.numpy as jnp
 from jax import random
@@ -7,7 +6,8 @@ from jax import random
 
 def shedding_load_dist(mu1, sd1, mu2, sd2, ng):
     """
-    Simulate the distribution of the sum of two gamma distributions
+    Distribution of shed viral RNA to number of infected individuals
+    Simulates the distribution of the sum of two gamma distributions
     """
 
     key = random.PRNGKey(0)
@@ -37,7 +37,7 @@ def shedding_load_dist(mu1, sd1, mu2, sd2, ng):
 
 def discrete_serial_interval(k, mu=2.8, sigma=1.5):
     """
-    Discretized serial interval distribution
+    Discretized serial interval distribution (infection to reporting)
     https://rdrr.io/cran/EpiEstim/src/R/discr_si.R
     """
     #' @param k Positive integer, or vector of positive integers for which the
@@ -52,13 +52,13 @@ def discrete_serial_interval(k, mu=2.8, sigma=1.5):
         raise ValueError("sigma must be non-negative")
     if mu <= 1:
         raise ValueError("mu must be greater than 1")
-    if any(k < 0):
+    if any([x < 0 for x in k]):
         raise ValueError("k must be non-negative")
 
     a = ((mu - 1) / sigma) ** 2
     b = sigma**2 / (mu - 1)
 
-    cdf_gamma = lambda k, a, b: dist.Gamma(a, b).cdf(k)
+    cdf_gamma = lambda k, a, b: jnp.array([dist.Gamma(a, b).cdf(x) for x in k])
 
     res = (
         k * cdf_gamma(k, a, b)
@@ -72,20 +72,6 @@ def discrete_serial_interval(k, mu=2.8, sigma=1.5):
         - cdf_gamma(k, a + 1, b)
     )
 
-    res = res.apply(lambda x: max(0, x))
+    res = jnp.maximum(0, res)
 
-    pass
-
-
-def main():
-    mu1 = 1
-    sd1 = 0.5
-    mu2 = 2
-    sd2 = 1
-    ng = 10
-    prob = shedding_load_dist(mu1, sd1, mu2, sd2, ng)
-    print(prob)
-
-
-if __name__ == "__main__":
-    main()
+    return res
